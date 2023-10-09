@@ -1,31 +1,21 @@
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
-const cors = require("cors");
+const cors = require("cors")({ origin: true });
 
-const corsHandler = cors({
-  origin: true,
-});
 const transporter = nodemailer.createTransport({
   service: "Outlook365",
   auth: {
-    user: "traibo-dev@outlook.com",
-    pass: "ntWP2C1waCeENsoDBkRX",
+    user: functions.config().email.user,
+    pass: functions.config().email.pass,
   },
 });
 
-const functions = require("firebase-functions");
-const nodemailer = require("nodemailer");
-const cors = require("cors")({ origin: true }); // <-- Modify this line
-
-// ... [rest of your code]
-
 exports.sendEmail = functions.https.onRequest((req, res) => {
-  corsHandler(req, res, () => {
-    // <-- Use the cors middleware here
+  cors(req, res, () => {
     const { email, message } = req.body;
 
     const mailOptions = {
-      from: "traibo-dev@outlook.com",
+      from: functions.config().email.user,
       to: email,
       subject: "New Message Notification from lending book platform ",
       text: message,
