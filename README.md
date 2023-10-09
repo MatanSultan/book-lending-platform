@@ -50,5 +50,3 @@ Follow us on our social media channels to stay updated with the latest news and 
 Start your reading journey today and become a part of our global community of book lovers. Happy reading!
 
 ---
-
-Note: You can replace the placeholders (like the email and social media links) with your actual links or details.
