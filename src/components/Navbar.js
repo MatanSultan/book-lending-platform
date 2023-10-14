@@ -1,10 +1,12 @@
 // components/Navbar.js
-import React from "react";
+import React, { useState } from "react";
+
 import { auth, GoogleAuthProvider } from "../firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
-
+import Alert from "./Alert";
 const Navbar = ({ user }) => {
+  const [alertMessage, setAlertMessage] = useState("");
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider);
@@ -13,7 +15,8 @@ const Navbar = ({ user }) => {
     signOut(auth)
       .then(() => {
         // Sign-out successful.
-        console.log("Signed out successfully");
+
+        setAlertMessage("Signed out successfully");
       })
       .catch((error) => {
         // An error happened during sign-out.
@@ -49,6 +52,7 @@ const Navbar = ({ user }) => {
           Sign In with Google
         </button>
       )}
+      <Alert message={alertMessage} onClose={() => setAlertMessage("")} />
     </nav>
   );
 };

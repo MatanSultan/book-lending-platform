@@ -9,7 +9,7 @@ import {
 import { getDatabase, ref, set, child } from "firebase/database";
 import { auth } from "../firebase";
 import BookPreview from "./BookPreview";
-
+import Alert from "./Alert";
 const DonateBook = () => {
   const [bookDetails, setBookDetails] = useState({
     title: "",
@@ -17,6 +17,7 @@ const DonateBook = () => {
     year: "",
     image: "",
   });
+  const [alertMessage, setAlertMessage] = useState("");
 
   const handleChange = (e) => {
     setBookDetails({
@@ -59,9 +60,9 @@ const DonateBook = () => {
       const booksRef = ref(db, "books");
       const newBookRef = child(booksRef, uuidv4());
       await set(newBookRef, finalBookDetails);
-      alert("Book donated successfully!");
+      setAlertMessage("Book donated successfully!");
     } else {
-      alert("You must be logged in to donate a book.");
+      setAlertMessage("You must be logged in to donate a book.");
     }
   };
 
@@ -88,6 +89,8 @@ const DonateBook = () => {
         </label>
         <button type="submit">Donate</button>
       </form>
+      <Alert message={alertMessage} onClose={() => setAlertMessage("")} />
+
       <BookPreview bookDetails={bookDetails} />
     </div>
   );

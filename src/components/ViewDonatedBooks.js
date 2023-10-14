@@ -2,17 +2,21 @@ import React, { useState, useEffect } from "react";
 import { getDatabase, ref, get } from "firebase/database";
 import { auth } from "../firebase";
 import { sendEmailNotification } from "../utils/emailNotification";
+import RequestBookModal from "./RequestBookModal"; // Import the modal component
 
 import "../App.css";
 import Spinner from "./Spinner";
+
 const ViewDonatedBooks = () => {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // State to manage loading
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedBook, setSelectedBook] = useState(null); // State for the selected book
 
   useEffect(() => {
     const fetchBooks = async () => {
-      setIsLoading(true); // Set loading to true when fetching starts
+      setIsLoading(true);
       if (auth.currentUser) {
         const db = getDatabase();
         const booksRef = ref(db, "books");
@@ -23,16 +27,14 @@ const ViewDonatedBooks = () => {
       } else {
         alert("You must be logged in to view donated books.");
       }
-      setIsLoading(false); // Set loading to false when fetching ends
+      setIsLoading(false);
     };
     fetchBooks();
   }, []);
 
-  const handleRequestBook = (donorEmail, bookTitle) => {
-    sendEmailNotification(
-      donorEmail,
-      `You have received a new message regarding the book "${bookTitle}" on the Donate Book website.`
-    );
+  const handleRequestBook = (book) => {
+    setSelectedBook(book);
+    setIsModalOpen(true);
   };
 
   const filteredBooks = books.filter((book) =>
@@ -70,9 +72,7 @@ const ViewDonatedBooks = () => {
                       Donated By: {book.donatedBy}
                     </p>
                     <button
-                      onClick={() =>
-                        handleRequestBook(book.donorEmail, book.title)
-                      }
+                      onClick={() => handleRequestBook(book)}
                       className="request-button"
                     >
                       Request Book
@@ -84,6 +84,14 @@ const ViewDonatedBooks = () => {
               <p>No books donated yet...</p>
             )}
           </div>
+          <RequestBookModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSendRequest={(name, email, message) => {
+              const fullMessage = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
+              sendEmailNotification(selectedBook.donorEmail, fullMessage);
+            }}
+          />
         </>
       )}
     </div>
